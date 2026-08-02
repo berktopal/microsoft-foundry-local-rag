@@ -67,3 +67,36 @@ Sistemin verimliliğini ve halüsinasyon direncini ölçmek için hazırlanan ot
 
 ---
 *Bu proje, Microsoft Foundry Local Yaz Okulu programı kapsamında geliştirilmiştir.*
+
+<table border="0">
+  <tr>
+    <!-- ÜST SATIR -->
+    <td>
+      <p align="center">
+        <!-- 1. Resim (Uygulama Boş Arayüz) -->
+        <img src="https://github.com/user-attachments/assets/6f9bc5e9-49a4-4922-89e0-b48399eb3c16" alt="Offline RAG Arayüzü 1" width="500px">
+      </p>
+    </td>
+    <td>
+      <p align="center">
+        <!-- 2. Resim (Soru-Cevap Demo) -->
+        <img src="https://github.com/user-attachments/assets/8e209f45-866e-431d-bdfa-7bb185c249a2" alt="Offline RAG Arayüzü 2" width="500px">
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <!-- ALT SATIR -->
+    <td>
+      <p align="center">
+        <!-- 3. Resim (RAG Bağlam Şeffaflığı) -->
+        <img src="https://github.com/user-attachments/assets/69b2263e-2bbe-44df-9f7c-310e8648b7cc" alt="Offline RAG Arayüzü 3" width="500px">
+      </p>
+    </td>
+    <td>
+      <p align="center">
+        <!-- 4. Resim (Veri Yükleme/İndeksleme) -->
+        <img src="https://github.com/user-attachments/assets/bd5a4745-619a-44ab-b67e-df9775d50a54" alt="Offline RAG Arayüzü 4" width="500px">
+      </p>
+    </td>
+  </tr>
+</table>
