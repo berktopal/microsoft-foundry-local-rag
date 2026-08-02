@@ -41,7 +41,7 @@ Proje, 4 temel RAG adımını yerel olarak simüle eder:
    *Tarayıcınızda açılan ekranda asistana belgelerle ilgili sorular sorabilirsiniz.*
 
 ##  Hata Ayıklama
-Streamlit arayüzünde, asistanın verdiği her yanıtın altında **" Okunan Kaynak Bağlamı (RAG)"** adında bir açılır menü bulunur. Bu menüye tıklayarak asistanın o cevabı üretmek için veritabanından hangi metin bloklarını çektiğini (Kosinüs Benzerliği sonuçlarını) şeffaf bir şekilde görebilirsiniz.
+Streamlit arayüzünde, asistanın verdiği her yanıtın altında **"Okunan Kaynak Bağlamı (RAG)"** adında bir açılır menü bulunur. Bu menüye tıklayarak asistanın o cevabı üretmek için veritabanından hangi metin bloklarını çektiğini (Kosinüs Benzerliği sonuçlarını) şeffaf bir şekilde görebilirsiniz.
 
 ##  Öğrenilen Dersler ve Optimizasyonlar
 
