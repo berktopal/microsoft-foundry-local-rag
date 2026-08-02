@@ -1,0 +1,28 @@
+RAG Sistemi Test Raporu
+========================================
+
+Soru 1: Berq Bank uygulamasının temel amacı nedir?
+Asistan Yanıtı: Kullanıcılar arasında hızlı, güvenli ve doğrudan (P2P) para transferi yapmalarını sağlamaktır.
+Durum: BAŞARILI
+----------------------------------------
+Soru 2: Sistemde vektör tabanlı arama süreci nasıl bir akış izliyor?
+Asistan Yanıtı: 1. Embedding: Kullanıcı sorusu sayısal vektörlere dönüştürülür
+2. Similarity Search: Cosine Similarity algoritması kullanılarak en yakın metin parçaları eşleştirir
+3. Context Retrieval: Eşleşen parçalar bağlam olarak sistemi ekler
+4. Generation: LLM teknik yanıtı sentezler
+Durum: BAŞARILI
+----------------------------------------
+Soru 3: Berq Bank hangi programlama dilleri ile geliştirildi?
+Asistan Yanıtı: Java ve Spring Boot
+Durum: BAŞARILI
+----------------------------------------
+Soru 4: SyllabusAI projesinin özellikleri nelerdir?
+Asistan Yanıtı: 1) Ders müfredatlarını dinamik hale getirir.
+2) Öğrenciler için etkileşimli bir öğrenme asistanı sunar.
+3) Eğitim materyallerini yapay zeka desteğiyle optimize eder.
+Durum: BAŞARILI
+----------------------------------------
+Soru 5: Türkiye'nin başkenti neresidir?
+Asistan Yanıtı: Bilgi bulunamadı
+Durum: BAŞARILI
+----------------------------------------

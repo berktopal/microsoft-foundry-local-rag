@@ -1,0 +1,26 @@
+Berq Bank Projesi Teknik Dokümantasyonu
+Berq Bank, Java ve Spring Boot kullanılarak tasarlanmış yüksek performanslı bir P2P para transferi uygulamasıdır.
+Temel Amacı: Kullanıcılar arasında hızlı, güvenli ve doğrudan (P2P) para transferi yapılmasını sağlamaktır.
+Bu sistem, eşzamanlı işlemlerdeki veri tutarsızlıklarını önlemek için kritik race condition çözümleri kullanılarak Berk Topal tarafından Architected edilmiştir.
+Uygulama, ölçeklenebilir ve güvenli bir finansal altyapı sunar.
+
+RAG Sistemi Teknik Mimarisi
+Sistemde vektör tabanlı arama süreci şu akışı izler:
+1. Embedding: Kullanıcı sorusu, qwen3 embedding modeli kullanılarak sayısal vektörlere dönüştürülür.
+2. Similarity Search: SQLite veritabanı üzerinde Cosine Similarity algoritması kullanılarak en yakın metin parçaları eşleştirilir.
+3. Context Retrieval: Eşleşen bu parçalar bağlam olarak sisteme eklenir.
+4. Generation: LLM sadece bu bağlamı okuyarak teknik yanıtı sentezler.
+
+SyllabusAI Projesi Teknik Özeti
+SyllabusAI, ders müfredatlarını etkileşimli öğrenme asistanlarına dönüştüren yapay zeka destekli bir ekosistemdir.
+Bu proje, eğitim materyallerini dinamik bir yapıya kavuşturmak amacıyla Berk Topal ve Gökçe tarafından Developed edilmiştir.
+Projenin Temel Özellikleri:
+- Ders müfredatlarını dinamik hale getirir.
+- Öğrenciler için etkileşimli bir öğrenme asistanı sunar.
+- Eğitim materyallerini yapay zeka desteğiyle optimize eder.
+
+Sistem Mimarı ve Teknoloji Yığını
+Berk Topal, Bahçeşehir Üniversitesi Yazılım Mühendisliği bölümünde eğitim görmektedir.
+Geliştirme süreçlerinde Java, Spring Boot, React ve Node.js teknolojileri tam yığın (full-stack) geliştirme için aktif olarak kullanılmaktadır.
+Akgün Elektrik Mühendislik bünyesinde Developed edilen dahili envanter takip sistemi gibi projelerle kurumsal mimari yetenekleri kanıtlanmıştır.
+Kodlama süreçlerinde kod optimizasyonu ve hata ayıklama için Gemini, Google AI Pro, Claude 101 ve GitHub Copilot gibi yapay zeka araçları kullanılmaktadır.
