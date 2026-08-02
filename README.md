@@ -1,16 +1,16 @@
-# 💻 Offline RAG System with Microsoft Foundry Local
+#  Offline RAG System with Microsoft Foundry Local
 
 Bu proje, **Microsoft Foundry Local** ve **RAG (Retrieval-Augmented Generation)** mimarisi kullanılarak geliştirilmiş, tamamen yerel (çevrimdışı) ve gizlilik odaklı bir Soru-Cevap (Q&A) asistanıdır.
 
 İnternet bağlantısına veya bulut API'lerine ihtiyaç duymadan, sağlanan yerel dokümanları okur, indeksler ve kullanıcının sorularına %100 yerel kaynaklara dayalı yanıtlar üretir.
 
-## 🚀 Projenin Amacı ve Çözdüğü Problem
+##  Projenin Amacı ve Çözdüğü Problem
 Günümüzdeki bulut tabanlı yapay zeka çözümleri (ChatGPT, Claude vb.) şirket içi gizli dokümanların veya kişisel verilerin işlenmesi için güvenlik riskleri taşır. Bu proje;
 * **Veri Gizliliği:** Hiçbir verinin dışarı çıkmadığı (On-Premise),
 * **Çevrimdışı Çalışma:** İnternet bağımlılığının olmadığı,
 * **Halüsinasyon Direnci (Zero-Hallucination):** LLM'in sadece ve sadece okuduğu yerel belgelere (bağlama) sadık kaldığı, bilgi yoksa uydurmak yerine "Bilgi bulunamadı." diyebilen bir çözüm sunar.
 
-## 🏗️ Sistem Mimarisi ve Kullanılan Teknolojiler
+##  Sistem Mimarisi ve Kullanılan Teknolojiler
 Proje, 4 temel RAG adımını yerel olarak simüle eder:
 
 1. **Veri Alma & Parçalama (Hybrid Semantic Chunking):** Dokümanlar (`.txt` veya `.pdf`), anlam bütünlüğü korunarak paragraf bazlı (çift satır atlama) yöntemle ayrılırken, CPU şişmelerini önlemek için `max_words=70` güvenlik sübabıyla hibrit olarak parçalanır (`ingest.py`).
@@ -18,7 +18,7 @@ Proje, 4 temel RAG adımını yerel olarak simüle eder:
 3. **Vektör Veritabanı:** Vektörler, hafif ve sunucusuz bir çözüm olan **SQLite** üzerinde depolanır (`database.py`).
 4. **Retrieval & Generation (Sentezleme):** Kullanıcı sorusu vektörize edilir, **Kosinüs Benzerliği (Cosine Similarity)** ile en yakın bağlam çekilir (`top_k=1`). Çekilen bağlam, **Microsoft Foundry Local** üzerinde çalışan `Phi-3.5-mini` modeline sıkı bir "Sistem Komutu (System Prompt)" ile verilerek cevap üretilir (`app.py`).
 
-## ⚙️ Kurulum ve Çalıştırma
+##  Kurulum ve Çalıştırma
 
 ### Ön Koşullar
 * Python 3.9 veya üzeri
@@ -40,10 +40,10 @@ Proje, 4 temel RAG adımını yerel olarak simüle eder:
    ```
    *Tarayıcınızda açılan ekranda asistana belgelerle ilgili sorular sorabilirsiniz.*
 
-## 🔍 Hata Ayıklama
-Streamlit arayüzünde, asistanın verdiği her yanıtın altında **"🔍 Okunan Kaynak Bağlamı (RAG)"** adında bir açılır menü bulunur. Bu menüye tıklayarak asistanın o cevabı üretmek için veritabanından hangi metin bloklarını çektiğini (Kosinüs Benzerliği sonuçlarını) şeffaf bir şekilde görebilirsiniz.
+##  Hata Ayıklama
+Streamlit arayüzünde, asistanın verdiği her yanıtın altında **" Okunan Kaynak Bağlamı (RAG)"** adında bir açılır menü bulunur. Bu menüye tıklayarak asistanın o cevabı üretmek için veritabanından hangi metin bloklarını çektiğini (Kosinüs Benzerliği sonuçlarını) şeffaf bir şekilde görebilirsiniz.
 
-## 🧠 Öğrenilen Dersler ve Optimizasyonlar
+##  Öğrenilen Dersler ve Optimizasyonlar
 
 Bu projeyi geliştirirken kısıtlı donanımlarda (yalnızca CPU) RAG sistemlerini optimize etmek için kritik ve yenilikçi mühendislik kararları alınmıştır:
 
@@ -52,16 +52,16 @@ Bu projeyi geliştirirken kısıtlı donanımlarda (yalnızca CPU) RAG sistemler
 * **Recency Bias (Son Saniye Eğilimi) Kalkanı:** Küçük dil modellerinin sistem komutlarını unutma eğilimine karşı, "Bilgi uydurma" yasağı `system_prompt` yerine, doğrudan kullanıcı sorusunun bir milisaniye öncesine enjekte edilerek %100 halüsinasyon direnci sağlandı.
 * **Truncation (Kesinti) Koruması:** Küçük modellerin iki nokta (`:`) işaretini durma komutu olarak algılaması ve listeleri yarıda kesmesi engellendi. `max_tokens` genişletilerek ve modele "eksiksiz okuma" talimatı verilerek veri kaybının önüne geçildi.
 
-## 🧪 Test Raporu
+##  Test Raporu
 Sistemin verimliliğini ve halüsinasyon direncini ölçmek için hazırlanan otomatik test süreci 5/5 başarı oranıyla tamamlanmıştır.
 
 | Soru | Asistan Yanıtı | Durum |
 | :--- | :--- | :--- |
-| Berq Bank amacı nedir? | P2P para transferi sağlamaktır. | ✅ Başarılı |
-| RAG akışı nasıldır? | Embedding -> Similarity -> Retrieval -> Generation | ✅ Başarılı |
-| Berq Bank dilleri? | Java ve Spring Boot | ✅ Başarılı |
-| SyllabusAI özellikleri? | Müfredat dinamiği, etkileşimli asistan, optimizasyon | ✅ Başarılı |
-| Türkiye'nin başkenti? | Bilgi bulunamadı. | ✅ Başarılı |
+| Berq Bank amacı nedir? | P2P para transferi sağlamaktır. | Başarılı |
+| RAG akışı nasıldır? | Embedding -> Similarity -> Retrieval -> Generation | Başarılı |
+| Berq Bank dilleri? | Java ve Spring Boot | Başarılı |
+| SyllabusAI özellikleri? | Müfredat dinamiği, etkileşimli asistan, optimizasyon | Başarılı |
+| Türkiye'nin başkenti? | Bilgi bulunamadı. | Başarılı |
 
 *Not: 5. soru, sistemin dış bilgiye kapalı olduğunu ve bağlam dışı konularda halüsinasyon üretmediğini kanıtlamak için özel olarak eklenmiştir.*
 
