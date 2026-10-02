@@ -1,72 +1,8 @@
-#  Offline RAG System with Microsoft Foundry Local
+# Offline RAG System with Microsoft Foundry Local
 
-Bu proje, **Microsoft Foundry Local** ve **RAG (Retrieval-Augmented Generation)** mimarisi kullanılarak geliştirilmiş, tamamen yerel (çevrimdışı) ve gizlilik odaklı bir Soru-Cevap (Q&A) asistanıdır.
+**Microsoft Foundry Local** ve **RAG (Retrieval-Augmented Generation)** mimarisiyle geliştirilmiş, tamamen yerel (çevrimdışı) ve gizlilik odaklı bir Soru-Cevap asistanı. İnternet bağlantısına veya bulut API'lerine ihtiyaç duymadan yerel dokümanları okur, indeksler ve soruları yalnızca bu dokümanlara dayanarak yanıtlar.
 
-İnternet bağlantısına veya bulut API'lerine ihtiyaç duymadan, sağlanan yerel dokümanları okur, indeksler ve kullanıcının sorularına %100 yerel kaynaklara dayalı yanıtlar üretir.
-
-##  Projenin Amacı ve Çözdüğü Problem
-Günümüzdeki bulut tabanlı yapay zeka çözümleri (ChatGPT, Claude vb.) şirket içi gizli dokümanların veya kişisel verilerin işlenmesi için güvenlik riskleri taşır. Bu proje;
-* **Veri Gizliliği:** Hiçbir verinin dışarı çıkmadığı (On-Premise),
-* **Çevrimdışı Çalışma:** İnternet bağımlılığının olmadığı,
-* **Halüsinasyon Direnci (Zero-Hallucination):** LLM'in sadece ve sadece okuduğu yerel belgelere (bağlama) sadık kaldığı, bilgi yoksa uydurmak yerine "Bilgi bulunamadı." diyebilen bir çözüm sunar.
-
-##  Sistem Mimarisi ve Kullanılan Teknolojiler
-Proje, 4 temel RAG adımını yerel olarak simüle eder:
-
-1. **Veri Alma & Parçalama (Hybrid Semantic Chunking):** Dokümanlar (`.txt` veya `.pdf`), anlam bütünlüğü korunarak paragraf bazlı (çift satır atlama) yöntemle ayrılırken, CPU şişmelerini önlemek için `max_words=70` güvenlik sübabıyla hibrit olarak parçalanır (`ingest.py`).
-2. **Embedding (Gömme):** Parçalar, `qwen3-embedding-0.6b` modeli ile sayısal vektörlere dönüştürülür.
-3. **Vektör Veritabanı:** Vektörler, hafif ve sunucusuz bir çözüm olan **SQLite** üzerinde depolanır (`database.py`).
-4. **Retrieval & Generation (Sentezleme):** Kullanıcı sorusu vektörize edilir, **Kosinüs Benzerliği (Cosine Similarity)** ile en yakın bağlam çekilir (`top_k=1`). Çekilen bağlam, **Microsoft Foundry Local** üzerinde çalışan `Phi-3.5-mini` modeline sıkı bir "Sistem Komutu (System Prompt)" ile verilerek cevap üretilir (`app.py`).
-
-##  Kurulum ve Çalıştırma
-
-### Ön Koşullar
-* Python 3.9 veya üzeri
-* Microsoft Foundry Local SDK (`pip install foundry-local-sdk`)
-* Streamlit (`pip install streamlit`)
-* Numpy & PyPDF2
-
-### Adım Adım Çalıştırma
-1. **Belgeleri Yükleme:** Sorgulanmasını istediğiniz dokümanları (`.txt` veya `.pdf`) projedeki `docs/` klasörünün içine atın.
-2. **Veritabanını Oluşturma (İndeksleme):**
-   Terminalde şu komutu çalıştırarak belgelerin hibrit yöntemle parçalanıp vektör veritabanına (SQLite) kaydedilmesini sağlayın:
-   ```bash
-   python ingest.py
-   ```
-3. **Kullanıcı Arayüzünü Başlatma:**
-   Streamlit arayüzünü ayağa kaldırmak için şu komutu çalıştırın:
-   ```bash
-   streamlit run app_ui.py
-   ```
-   *Tarayıcınızda açılan ekranda asistana belgelerle ilgili sorular sorabilirsiniz.*
-
-##  Hata Ayıklama
-Streamlit arayüzünde, asistanın verdiği her yanıtın altında **"Okunan Kaynak Bağlamı (RAG)"** adında bir açılır menü bulunur. Bu menüye tıklayarak asistanın o cevabı üretmek için veritabanından hangi metin bloklarını çektiğini (Kosinüs Benzerliği sonuçlarını) şeffaf bir şekilde görebilirsiniz.
-
-##  Öğrenilen Dersler ve Optimizasyonlar
-
-Bu projeyi geliştirirken kısıtlı donanımlarda (yalnızca CPU) RAG sistemlerini optimize etmek için kritik ve yenilikçi mühendislik kararları alınmıştır:
-
-* **Hibrit Parçalama (Hybrid Chunking):** Sadece sabit kelime limitine göre (Fixed-Size) kesmek bağlam kanamasına yol açtığı için önce çift satır atlamaya (paragrafa) göre anlamsal bir bölme yapıldı. Büyük PDF bloklarında işlemcinin kilitlenmesini önlemek için ise `max_words=70` limitiyle çalışan bir güvenlik mekanizması entegre edildi.
-* **Ekstrem Hız Modu (CPU Optimizasyonu):** Veritabanı izolasyonu kusursuz hale getirildiği için, modelin okuması gereken parça sayısı `top_k=1` seviyesine düşürüldü. Bu sayede işlemci yükü hafifletilerek yanıt süresi donanımın elverdiği minimum fiziksel sınırlara çekildi.
-* **Recency Bias (Son Saniye Eğilimi) Kalkanı:** Küçük dil modellerinin sistem komutlarını unutma eğilimine karşı, "Bilgi uydurma" yasağı `system_prompt` yerine, doğrudan kullanıcı sorusunun bir milisaniye öncesine enjekte edilerek %100 halüsinasyon direnci sağlandı.
-* **Truncation (Kesinti) Koruması:** Küçük modellerin iki nokta (`:`) işaretini durma komutu olarak algılaması ve listeleri yarıda kesmesi engellendi. `max_tokens` genişletilerek ve modele "eksiksiz okuma" talimatı verilerek veri kaybının önüne geçildi.
-
-##  Test Raporu
-Sistemin verimliliğini ve halüsinasyon direncini ölçmek için hazırlanan otomatik test süreci 5/5 başarı oranıyla tamamlanmıştır.
-
-| Soru | Asistan Yanıtı | Durum |
-| :--- | :--- | :--- |
-| Berq Bank amacı nedir? | P2P para transferi sağlamaktır. | Başarılı |
-| RAG akışı nasıldır? | Embedding -> Similarity -> Retrieval -> Generation | Başarılı |
-| Berq Bank dilleri? | Java ve Spring Boot | Başarılı |
-| SyllabusAI özellikleri? | Müfredat dinamiği, etkileşimli asistan, optimizasyon | Başarılı |
-| Türkiye'nin başkenti? | Bilgi bulunamadı. | Başarılı |
-
-*Not: 5. soru, sistemin dış bilgiye kapalı olduğunu ve bağlam dışı konularda halüsinasyon üretmediğini kanıtlamak için özel olarak eklenmiştir.*
-
----
-*Bu proje, Microsoft Foundry Local Yaz Okulu programı kapsamında geliştirilmiştir.*
+*Microsoft Foundry Local Yaz Okulu programı kapsamında geliştirilmiştir.*
 
 <table border="0">
   <tr>
@@ -100,3 +36,86 @@ Sistemin verimliliğini ve halüsinasyon direncini ölçmek için hazırlanan ot
     </td>
   </tr>
 </table>
+
+## Projenin Amacı
+
+Bulut tabanlı yapay zeka servisleri, şirket içi gizli dokümanların veya kişisel verilerin işlenmesinde veri gizliliği riski taşır. Bu proje:
+
+* **Veri gizliliği:** Hiçbir veri cihazdan dışarı çıkmaz (on-premise).
+* **Çevrimdışı çalışma:** Modeller indirildikten sonra internet bağlantısı gerekmez.
+* **Bağlama sadakat:** Model yalnızca getirilen doküman parçasına dayanarak yanıt verir; bağlamda bilgi yoksa uydurmak yerine *"Bilgi bulunamadı."* yanıtı vermesi hedeflenir ve bu davranış testle kontrol edilir.
+
+## Sistem Mimarisi
+
+```
+docs/*.txt|*.pdf ──► ingest.py ──► parçalama ──► qwen3-embedding-0.6b ──► SQLite (local_rag_knowledge.db)
+                                                                                              │
+Soru ──► embedding ──► kosinüs benzerliği (top_k=1) ◄─────────────────────────────────────────┘
+                              │
+                              ▼
+               Phi-3.5-mini (Foundry Local) ──► Yanıt + kullanılan bağlam
+```
+
+1. **Veri alma ve parçalama (hibrit chunking)** — `ingest.py`: Dokümanlar (`.txt` / `.pdf`) önce paragraflara (çift satır sonu) bölünür; 70 kelimeyi aşan paragraflar ayrıca parçalanır (`max_words=70`).
+2. **Embedding:** Parçalar `qwen3-embedding-0.6b` modeliyle vektöre dönüştürülür.
+3. **Vektör deposu** — `database.py`: Vektörler sunucusuz **SQLite** veritabanında tutulur.
+4. **Retrieval ve generation** — `app.py`: Soru vektörize edilir, **kosinüs benzerliği** ile en yakın parça (`top_k=1`) bulunur ve sıkı bir sistem komutuyla birlikte Foundry Local üzerinde çalışan `Phi-3.5-mini` modeline verilir.
+5. **Arayüz** — `app_ui.py`: Streamlit sohbet arayüzü; her yanıtın altında modelin kullandığı bağlam şeffaf biçimde gösterilir.
+
+## Kurulum ve Çalıştırma
+
+### Ön koşullar
+* Python 3.9+
+* [Microsoft Foundry Local](https://github.com/microsoft/Foundry-Local) kurulu olmalı (modeller ilk çalıştırmada indirilir)
+
+```bash
+pip install -r requirements.txt
+```
+
+### Adımlar
+1. **Belgeleri ekleyin:** Sorgulanacak `.txt` / `.pdf` dosyalarını `docs/` klasörüne koyun (örnek: `docs/ornek_bilgi.txt`).
+2. **İndeksleyin:**
+   ```bash
+   python ingest.py
+   ```
+3. **Arayüzü başlatın:**
+   ```bash
+   streamlit run app_ui.py
+   ```
+
+## Testler
+
+`test_runner.py`, sistemi uçtan uca çalıştırır ve her yanıtı **beklenen anahtar ifadelerle** karşılaştırır. Bir test ancak gerekli ifadelerin tamamı yanıtta geçiyorsa başarılı sayılır; model hatası da başarısızlık sayılır ve betik bu durumda sıfırdan farklı bir çıkış koduyla biter.
+
+```bash
+python test_runner.py      # sonuçlar test_raporu.txt dosyasına yazılır
+```
+
+| Soru | Beklenen ifade | Kaydedilen yanıt | Durum |
+| :--- | :--- | :--- | :--- |
+| Berq Bank'ın amacı nedir? | `P2P` | Kullanıcılar arasında hızlı, güvenli ve doğrudan (P2P) para transferi | ✅ |
+| Vektör arama akışı nasıldır? | `Embedding`, `Similarity` | Embedding → Similarity Search → Context Retrieval → Generation | ✅ |
+| Berq Bank hangi dillerle geliştirildi? | `Java` | Java ve Spring Boot | ✅ |
+| SyllabusAI'ın özellikleri nelerdir? | `müfredat` | Ders müfredatlarını dinamik hale getirir… | ✅ |
+| Türkiye'nin başkenti neresidir? *(bağlam dışı)* | `Bilgi bulunamadı` | Bilgi bulunamadı | ✅ |
+
+Son soru, sistemin doküman dışı bir bilgiyi kendi genel bilgisinden üretmediğini kontrol etmek için bilerek eklenmiştir. Test seti küçüktür (5 soru); genel bir doğruluk ölçümü değil, temel davranışların regresyon kontrolüdür.
+
+## Mühendislik Kararları (yalnızca CPU ortamı için)
+
+* **Hibrit parçalama:** Sabit kelime sayısıyla kesmek anlamsal bütünlüğü bozduğu için önce paragraf bazlı bölme yapıldı; çok uzun PDF bloklarında işlemciyi kilitlememek için `max_words=70` üst sınırı eklendi.
+* **`top_k=1`:** Küçük bir modelin okuması gereken bağlamı en aza indirerek CPU'da yanıt süresini kısaltır. Karşılığında, cevabı birden fazla parçaya dağılmış sorularda isabet düşebilir.
+* **Sade ve kesin sistem komutu:** Küçük dil modelleri uzun ve şartlı talimatlarda kararsızlaşabildiği için komut üç kurala indirildi: yalnızca bağlamı kullan, bağlamdaki ifadeleri aktar, bağlamda ipucu yoksa *"Bilgi bulunamadı."* yaz. Önceki sürümdeki kafa karıştırıcı ek şart kaldırıldı.
+* **Deterministik ve hızlı üretim:** `temperature=0.0` ile tekrarlanabilir yanıtlar; CPU'da gecikmeyi azaltmak için `max_tokens=80`.
+* **Dayanıklılık:** CPU'da uzun süren çağrılar için 120 sn zaman aşımı ve 2 denemeli yeniden deneme (retry) mekanizması.
+
+## Proje Yapısı
+
+```
+├── ingest.py        # dokümanları okur, parçalar, embedding üretir, SQLite'a yazar
+├── database.py      # SQLite şeması, kosinüs benzerliği, en yakın parçaları getirme
+├── app.py           # retrieval + Phi-3.5-mini ile yanıt üretimi
+├── app_ui.py        # Streamlit arayüzü
+├── test_runner.py   # anahtar ifade tabanlı uçtan uca testler
+└── docs/            # indekslenecek dokümanlar
+```

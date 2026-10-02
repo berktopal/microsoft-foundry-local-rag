@@ -1,2 +1,4 @@
 foundry-local-sdk
 numpy
+streamlit
+PyPDF2
